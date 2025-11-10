@@ -2,9 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Builder\BuilderController;
+use App\Http\Controllers\Builder\BuilderPreviewController;
+
+// تحميل مسارات التصحيح
+require __DIR__.'/debug.php';
 use App\Http\Controllers\Builder\BuilderDashboardController;
 use App\Http\Controllers\Builder\BuilderFormController;
-use App\Http\Controllers\Builder\BuilderPreviewController;
 use App\Http\Controllers\Builder\BuilderRelationsController;
 use App\Http\Controllers\Builder\CrudGeneratorController;
 use App\Http\Controllers\Builder\FormPreviewController;
@@ -16,6 +19,12 @@ use App\Http\Controllers\Generated\PosationsController;
 // 🏠 الصفحة الرئيسية (افتراضية)
 Route::get('/', fn() => view('welcome'));
 
+// Load generated routes if the file exists
+$generatedRoutesFile = base_path('routes/generated.php');
+if (file_exists($generatedRoutesFile)) {
+    require $generatedRoutesFile;
+}
+
 /*
 |--------------------------------------------------------------------------
 | 🧩 AutoCrudSmart Routes
@@ -25,50 +34,50 @@ Route::prefix('builder')->group(function () {
 
     // 🧭 Dashboard
     Route::get('/', [BuilderDashboardController::class, 'index'])->name('builder.dashboard');
+    
+    // 🔍 Health Check
+    Route::get('/health', [BuilderDashboardController::class, 'healthCheck'])->name('builder.health');
 
     // 🧱 Tables Manager
     Route::get('/tables', [BuilderController::class, 'index'])->name('builder.tables');
     Route::post('/tables/save', [BuilderController::class, 'saveTable'])->name('builder.tables.save');
     Route::post('/inject/{table}', [BuilderController::class, 'injectToDatabase'])->name('builder.tables.inject');
 
-    // 🔗 Relations Manager
     Route::get('/relations', [BuilderRelationsController::class, 'index'])->name('builder.relations');
     Route::post('/relations/save', [BuilderRelationsController::class, 'save'])->name('builder.relations.save');
     Route::get('/relations/inject/{index}', [BuilderRelationsController::class, 'inject'])->name('builder.relations.inject');
 
     // 🎨 Form Master (الصفحة الجديدة مع اختيار الجدول + المعاينة)
-    Route::get('/form-master', [FormPreviewController::class, 'master'])->name('builder.form.master');
-    Route::post('/form-master/load', [FormPreviewController::class, 'loadTableFields'])->name('builder.form.load');
-    Route::post('/form-master/save', [FormPreviewController::class, 'saveDesign'])->name('builder.form.save');
-    Route::get('/preview/generate/{table}', [\App\Http\Controllers\Builder\BuilderPreviewController::class, 'generateForm'])
-        ->name('builder.preview.generate');
-    Route::get('/preview/view/{table}', [\App\Http\Controllers\Builder\BuilderPreviewController::class, 'viewGenerated'])
-        ->name('builder.preview.view');
-    Route::post('/preview/update-ui', [\App\Http\Controllers\Builder\BuilderPreviewController::class, 'updateUI'])
-        ->name('builder.preview.updateUI');
-
+    Route::prefix('form-master')->name('builder.form.')->group(function () {
+        Route::get('/', [FormPreviewController::class, 'master'])->name('master');
+        Route::post('/load', [FormPreviewController::class, 'loadTableFields'])->name('load');
+        Route::post('/save', [FormPreviewController::class, 'saveDesign'])->name('save');
+        
+        // معاينة النموذج
+        Route::get('/preview/{table}', [BuilderPreviewController::class, 'generateForm'])
+            ->name('preview');
+            
+        // تحديث واجهة المستخدم
+        Route::post('/update-ui', [BuilderPreviewController::class, 'updateUI'])
+            ->name('updateUI');
+    });
+    
+    // مسار مصمم النماذج
+    Route::get('/form-designer/{table}', [FormPreviewController::class, 'index'])
+        ->name('builder.form.designer');
+        
+    // إنشاء CRUD
     Route::get('/crud/generate/{table}', [BuilderPreviewController::class, 'generateCrud'])
         ->name('builder.crud.generate');
-
-    Route::get('/crud/generate/{table}', [BuilderPreviewController::class, 'generateCrud'])
-        ->name('builder.crud.generate.table');
-
-    // معاينة الفورم (لو تحتاجها من المصمم)
-    Route::get('/preview/generate-form/{table}', [BuilderPreviewController::class, 'generateForm'])
-        ->name('builder.preview.generateForm');
-
-
-
-
-
-    // 🎨 Form Designer (النسخة القديمة لجدول واحد)
-    Route::get('/form-designer/{table}', [FormPreviewController::class, 'index'])->name('builder.form.designer');
 
     // ⚙️ CRUD Generator
     Route::get('/crud', [CrudGeneratorController::class, 'index'])->name('builder.crud');
     Route::post('/crud/generate', [CrudGeneratorController::class, 'generate'])->name('builder.crud.generate');
     Route::get('/generate-controller/{table}', [CrudGeneratorController::class, 'generate'])->name('builder.generate.controller');
     Route::get('/generate-index/{table}', [CrudGeneratorController::class, 'generateIndex'])->name('builder.generate.index');
+    
+    // Form Generation
+    Route::post('/generate/{table}', [BuilderPreviewController::class, 'saveFormDesign'])->name('builder.form.generate');
 
     // 🧱 Model Generator
     Route::get('/generate-model/{table}', [ModelGeneratorController::class, 'generate'])->name('builder.generate.model');
@@ -106,5 +115,4 @@ foreach ($generatedControllers as $controllerPath) {
     }
 }
 Route::resource('departments', DepartmentsController::class);
-Route::resource('posation', PosationsController::class);
 

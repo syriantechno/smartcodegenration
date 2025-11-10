@@ -18,5 +18,20 @@
         "table_a": "employees",
         "relation_type": "belongsTo",
         "table_b": "test33"
+    },
+    {
+        "table_a": "monera",
+        "relation_type": "belongsTo",
+        "table_b": "test1"
+    },
+    {
+        "table_a": "monera",
+        "relation_type": "hasOne",
+        "table_b": "louai"
+    },
+    {
+        "table_a": "louai222222",
+        "relation_type": "belongsTo",
+        "table_b": "monera"
     }
 ]

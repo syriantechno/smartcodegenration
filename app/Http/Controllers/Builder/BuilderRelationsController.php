@@ -119,7 +119,7 @@ class BuilderRelationsController extends Controller
                         'input' => 'select',
                         'required' => false,
                         'in_table' => true,
-                        'relation' => "{$tableB}.id"
+                        'relation' => "{$tableB}.name"
                     ];
                     $save($tableA, $dataA);
                 }
@@ -142,7 +142,7 @@ class BuilderRelationsController extends Controller
                         'input' => 'select',
                         'required' => false,
                         'in_table' => true,
-                        'relation' => "{$tableA}.id"
+                        'relation' => "{$tableA}.name"
                     ];
                     $save($tableB, $dataB);
                 }

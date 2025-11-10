@@ -3,12 +3,85 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 class CrudGeneratorService
 {
     protected string $tablesPath;
     protected string $controllersPath;
+    
+    /**
+     * Generate complete CRUD for a table
+     *
+     * @param string $table
+     * @return array
+     */
+    public function generate(string $table): array
+    {
+        try {
+            // Generate controller
+            $controllerResult = $this->generateController($table);
+            if (isset($controllerResult['error'])) {
+                throw new \Exception($controllerResult['error']);
+            }
+            
+            // Generate views
+            $viewsResult = [
+                'index' => $this->generateIndexView($table),
+                'form' => $this->generateFormView($table)
+            ];
+            
+            // Generate routes
+            $routesAdded = $this->addRoutes($table);
+            
+            return [
+                'success' => true,
+                'controller' => $controllerResult,
+                'views' => $viewsResult,
+                'routes_added' => $routesAdded,
+                'message' => 'تم إنشاء واجهة CRUD بنجاح'
+            ];
+            
+        } catch (\Exception $e) {
+            \Log::error('CRUD Generation Error: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'فشل إنشاء واجهة CRUD: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    /**
+     * Add routes for the generated CRUD
+     *
+     * @param string $table
+     * @return bool
+     */
+    protected function addRoutes(string $table): bool
+    {
+        try {
+            $routeFile = base_path('routes/generated.php');
+            
+            // Create the routes file if it doesn't exist
+            if (!file_exists($routeFile)) {
+                file_put_contents($routeFile, "<?php\n\n");
+            }
+            
+            $controllerName = Str::studly(Str::singular($table)) . 'Controller';
+            $routeContent = "\n// Routes for {$table}\n";
+            $routeContent .= "Route::resource('{$table}', \\App\\Http\\Controllers\\Generated\\{$controllerName}');\n";
+            
+            // Append the routes to the file
+            file_put_contents($routeFile, $routeContent, FILE_APPEND);
+            
+            return true;
+            
+        } catch (\Exception $e) {
+            \Log::error('Route generation failed: ' . $e->getMessage());
+            return false;
+        }
+    }
 
     public function __construct()
     {

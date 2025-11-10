@@ -105,9 +105,39 @@
 
     <script>
         async function injectRelation(index) {
-            const res = await fetch(`/builder/relations/inject/${index}`);
-            const data = await res.json();
-            alert(data.message || data.error);
+            try {
+                const res = await fetch(`/builder/relations/inject/${index}`);
+                const data = await res.json();
+                
+                if (data.status === 'ok') {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message || 'Operation completed successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#3b82f6',
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.error || 'An error occurred',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to process your request',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ef4444'
+                });
+                console.error('Error:', error);
+            }
         }
 
         document.getElementById('relation-form').addEventListener('submit', async (e) => {
@@ -137,8 +167,24 @@
                     </td>`;
                 tbody.appendChild(tr);
                 e.target.reset();
+                
+                Swal.fire({
+                    title: 'Success!',
+                    text: data.message || 'Relation saved successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#3b82f6',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
             } else {
-                alert('❌ Failed to save relation.');
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.error || 'Failed to save relation',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ef4444'
+                });
             }
         });
     </script>

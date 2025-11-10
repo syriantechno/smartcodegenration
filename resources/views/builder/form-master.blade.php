@@ -47,18 +47,39 @@
         const liveBox = document.getElementById('livePreviewBox');
 
         async function loadPreview(table) {
-            liveContainer.classList.add('hidden');
-            const res = await fetch(`/builder/preview/generate/${table}`);
-            const data = await res.json();
+            try {
+                liveContainer.classList.add('hidden');
+                // استخدام المسار الصحيح مع البادئة /builder/form-master/
+                const res = await fetch(`/builder/form-master/preview/${table}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    credentials: 'same-origin'
+                });
+                
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await res.json();
 
-            if (data.status === 'ok') {
-                liveContainer.classList.remove('hidden');
-                liveBox.innerHTML = data.html;
-                openDesigner.classList.remove('hidden');
-                reloadBtn.classList.remove('hidden');
-                generateBtn.classList.remove('hidden');
-            } else {
-                alert(data.error || 'Error generating preview.');
+                if (data.status === 'ok') {
+                    liveContainer.classList.remove('hidden');
+                    liveBox.innerHTML = data.html;
+                    openDesigner.href = `/builder/form-designer/${table}`;
+                    openDesigner.classList.remove('hidden');
+                    reloadBtn.classList.remove('hidden');
+                    generateBtn.dataset.table = table;
+                    generateBtn.classList.remove('hidden');
+                } else {
+                    throw new Error(data.error || 'Error generating preview.');
+                }
+            } catch (error) {
+                console.error('Error loading preview:', error);
+                alert('حدث خطأ أثناء تحميل المعاينة. يرجى التأكد من وجود الجدول المحدد.');
             }
         }
 
@@ -83,29 +104,45 @@
         // 🔹 توليد CRUD كامل
         generateBtn.addEventListener('click', async () => {
             const table = tableSelect.value;
-            if (!table) return alert("⚠️ Select a table first!");
-            const res = await fetch(`/builder/crud/generate/${table}`);
-            const data = await res.json();
+            if (!table) return alert("⚠️ الرجاء اختيار جدول أولاً!");
+            
+            try {
+                const res = await fetch(`/builder/crud/generate/${table}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await res.json();
 
-            if (data.status === 'ok') {
-                liveBox.innerHTML = `
+                if (data.status === 'ok') {
+                    liveBox.innerHTML = `
         <div class="p-4 bg-green-50 border border-green-300 rounded-lg shadow-inner">
-            <div class="text-green-700 font-bold text-lg mb-2">✅ ${data.message}</div>
+            <div class="text-green-700 font-bold text-lg mb-2">✅ ${data.message || 'تم إنشاء CRUD بنجاح'}</div>
             <div class="text-gray-700 text-sm leading-relaxed">
-                <p><strong>Model:</strong> ${data.model}</p>
-                <p><strong>Controller:</strong> ${data.controller}</p>
-                <p><strong>Migration:</strong> ${data.migration}</p>
-                <p><strong>Views:</strong> ${data.views.join('<br>')}</p>
+                ${data.model ? `<p><strong>النموذج:</strong> ${data.model}</p>` : ''}
+                ${data.controller ? `<p><strong>المتحكم:</strong> ${data.controller}</p>` : ''}
+                ${data.migration ? `<p><strong>الترحيل:</strong> ${data.migration}</p>` : ''}
+                ${data.views && data.views.length ? `<p><strong>واجهات المستخدم:</strong> ${data.views.join('<br>')}</p>` : ''}
             </div>
             <div class="mt-3">
                 <button onclick="loadPreview('${table}')"
                         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    👁 View Form Preview Again
+                    👁 عرض معاينة النموذج مرة أخرى
                 </button>
             </div>
         </div>`;
-            } else {
-                alert(data.error || '❌ CRUD generation failed.');
+                } else {
+                    throw new Error(data.error || '❌ فشل إنشاء CRUD');
+                }
+            } catch (error) {
+                console.error('Error generating CRUD:', error);
+                alert(`حدث خطأ أثناء إنشاء CRUD: ${error.message}`);
             }
         });
     </script>

@@ -45,8 +45,24 @@
             "required": false,
             "in_table": true,
             "relation": "departments.name"
+        },
+        {
+            "name": "posation_id",
+            "type": "integer",
+            "label": "Posation",
+            "input": "select",
+            "required": false,
+            "in_table": true,
+            "relation": "posation.name"
+        },
+        {
+            "name": "test33_id",
+            "type": "integer",
+            "label": "Test33",
+            "input": "select",
+            "required": false,
+            "in_table": true,
+            "relation": "test33.name"
         }
-
-
     ]
 }

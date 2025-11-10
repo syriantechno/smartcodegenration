@@ -11,6 +11,7 @@ use App\Http\Controllers\Builder\FormPreviewController;
 use App\Http\Controllers\Builder\ModelGeneratorController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\Generated\DepartmentsController;
+use App\Http\Controllers\Generated\PosationsController;
 
 // 🏠 الصفحة الرئيسية (افتراضية)
 Route::get('/', fn() => view('welcome'));
@@ -49,7 +50,12 @@ Route::prefix('builder')->group(function () {
     Route::get('/crud/generate/{table}', [BuilderPreviewController::class, 'generateCrud'])
         ->name('builder.crud.generate');
 
+    Route::get('/crud/generate/{table}', [BuilderPreviewController::class, 'generateCrud'])
+        ->name('builder.crud.generate.table');
 
+    // معاينة الفورم (لو تحتاجها من المصمم)
+    Route::get('/preview/generate-form/{table}', [BuilderPreviewController::class, 'generateForm'])
+        ->name('builder.preview.generateForm');
 
 
 
@@ -100,4 +106,5 @@ foreach ($generatedControllers as $controllerPath) {
     }
 }
 Route::resource('departments', DepartmentsController::class);
+Route::resource('posation', PosationsController::class);
 

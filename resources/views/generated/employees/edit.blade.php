@@ -28,6 +28,22 @@
 @foreach($options as $opt)<option value='{{ $opt->id }}'>{{ $opt->name }}</option>@endforeach
 </select>
 </div>
+<div class='flex flex-col'>
+<label for='posation_id' class='font-medium text-gray-700 mb-1'>Posation</label>
+<?php $options = App\Models\Posation::all(); ?>
+<select name='posation_id' id='posation_id' style='' class='border p-2 w-full'>
+<option value=''>Select...</option>
+@foreach($options as $opt)<option value='{{ $opt->id }}'>{{ $opt->name }}</option>@endforeach
+</select>
+</div>
+<div class='flex flex-col'>
+<label for='test33_id' class='font-medium text-gray-700 mb-1'>Test33</label>
+<?php $options = App\Models\Test33::all(); ?>
+<select name='test33_id' id='test33_id' style='' class='border p-2 w-full'>
+<option value=''>Select...</option>
+@foreach($options as $opt)<option value='{{ $opt->id }}'>{{ $opt->name }}</option>@endforeach
+</select>
+</div>
 <button type='submit' class='px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>💾 Save</button>
 </form>
 </div>

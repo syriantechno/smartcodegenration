@@ -8,5 +8,15 @@
         "table_a": "employees",
         "relation_type": "belongsTo",
         "table_b": "departments"
+    },
+    {
+        "table_a": "employees",
+        "relation_type": "belongsTo",
+        "table_b": "posation"
+    },
+    {
+        "table_a": "employees",
+        "relation_type": "belongsTo",
+        "table_b": "test33"
     }
 ]

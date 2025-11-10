@@ -1,0 +1,47 @@
+input, select, textarea {
+    transition: all 0.2s ease-in-out;
+    outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+}
+
+/* ستايلات عامة */
+.classic input, .classic select, .classic textarea {
+    border: 1.5px solid #c8c9c8;
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.softui input, .softui select, .softui textarea {
+    border: none;
+    border-radius: 10px;
+    background: #fdfdfd;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.7);
+}
+
+.flat input, .flat select, .flat textarea {
+    border: none;
+    border-bottom: 2px solid #ccc;
+    border-radius: 0;
+    background: transparent;
+}
+
+.glass input, .glass select, .glass textarea {
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+}
+
+.material input, .material select, .material textarea {
+    border: none;
+    border-bottom: 2px solid #2196f3;
+    background: transparent;
+}
+.material input:focus {
+    border-bottom-color: #0d47a1;
+}

@@ -1,12 +1,52 @@
-[
-    {
-        "name": "id",
-        "type": "integer",
-        "required": true
-    },
-    {
-        "name": "name",
-        "type": "string",
-        "required": true
-    }
-]
+{
+    "table": "departments",
+    "fields": [
+        {
+            "name": "id",
+            "type": "integer",
+            "label": "Id",
+            "input": "number",
+            "required": true,
+            "in_table": true,
+            "relation": null,
+            "ui": {
+                "borderColor": "#a41ce3",
+                "focusColor": "#18b8cd",
+                "boxShadow": "0 6px 16px rgba(0,0,0,0.3)",
+                "background": "#ffffff",
+                "borderRadius": "18px"
+            }
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "label": "Name",
+            "input": "text",
+            "required": false,
+            "in_table": true,
+            "relation": null,
+            "ui": {
+                "borderColor": "#6cd5ea",
+                "borderRadius": "3px",
+                "boxShadow": "0 4px 10px rgba(0,0,0,0.2)",
+                "focusColor": "#8d1bda"
+            }
+        },
+        {
+            "name": "manager",
+            "type": "string",
+            "label": "Manager",
+            "input": "text",
+            "required": false,
+            "in_table": true,
+            "relation": null,
+            "ui": {
+                "boxShadow": "0 6px 16px rgba(0,0,0,0.3)",
+                "focusColor": "#16c542",
+                "borderRadius": "50px",
+                "borderColor": "#227ef7",
+                "background": "#ffffff"
+            }
+        }
+    ]
+}

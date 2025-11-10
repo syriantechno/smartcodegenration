@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Builder;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -49,7 +50,17 @@ class BuilderFormController extends Controller
             }
         }
 
-        return view('builder.form', compact('tables', 'selected', 'fields', 'lookups'));
+        // 🔹 Inject lookups مباشرة داخل الحقول
+        foreach ($fields as &$f) {
+            $name = $f['name'] ?? '';
+            if (isset($lookups[$name])) {
+                $f['options'] = $lookups[$name];
+            }
+        }
+        unset($f);
+
+        return view('builder.form', compact('tables', 'selected', 'fields'));
+
     }
 
     public function store(Request $request)

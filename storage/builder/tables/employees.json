@@ -1,22 +1,52 @@
-[
-    {
-        "name": "id",
-        "type": "integer",
-        "required": false
-    },
-    {
-        "name": "name",
-        "type": "string",
-        "required": false
-    },
-    {
-        "name": "email",
-        "type": "string",
-        "required": false
-    },
-    {
-        "name": "department_id",
-        "type": "integer",
-        "required": false
-    }
-]
+{
+    "table": "employees",
+    "fields": [
+        {
+            "name": "id",
+            "type": "integer",
+            "label": "Id",
+            "input": "number",
+            "required": true,
+            "in_table": true,
+            "relation": null
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "label": "Name",
+            "input": "text",
+            "required": true,
+            "in_table": true,
+            "relation": null
+        },
+        {
+            "name": "email",
+            "type": "string",
+            "label": "Email",
+            "input": "email",
+            "required": false,
+            "in_table": true,
+            "relation": null
+        },
+        {
+            "name": "phone",
+            "type": "string",
+            "label": "Phone",
+            "input": "text",
+            "required": false,
+            "in_table": true,
+            "relation": null
+        },
+        {
+            "name": "department_id",
+            "type": "integer",
+            "label": "Department",
+            "input": "select",
+            "required": false,
+            "in_table": true,
+            "relation": "departments.name"
+        }
+
+
+    ]
+}

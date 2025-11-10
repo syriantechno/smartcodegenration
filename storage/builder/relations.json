@@ -1,8 +1,8 @@
 [
     {
-        "table_a": "test1",
-        "relation_type": "hasOne",
-        "table_b": "test2"
+        "table_a": "employees",
+        "relation_type": "belongsTo",
+        "table_b": "departments"
     },
     {
         "table_a": "employees",

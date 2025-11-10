@@ -1,93 +1,153 @@
-@extends('layouts.app')
+@extends('layouts.builder')
 
 @section('content')
-    <div class="max-w-5xl mx-auto mt-10">
+    <div class="max-w-5xl mx-auto space-y-10">
 
-        <h1 class="text-2xl font-bold mb-6">🧱 Laravel Table Builder</h1>
+        <!-- 🧱 العنوان الرئيسي -->
+        <div class="border-b pb-4">
+            <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+                🧱 Laravel Table Builder
+            </h1>
+            <p class="text-gray-500 mt-1">Create and manage database tables easily.</p>
+        </div>
 
-        <div class="border p-5 rounded-lg mb-10 bg-white shadow">
-            <h2 class="text-lg font-semibold mb-4">إنشاء جدول جديد</h2>
+        <!-- 🔹 إنشاء جدول جديد -->
+        <div class="bg-white border rounded-xl shadow p-6 space-y-6">
+            <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Create New Table</h2>
 
-            <form id="builder-form">
-                <div class="mb-3">
-                    <label class="block mb-1 font-medium">اسم الجدول</label>
-                    <input type="text" id="table" class="border rounded w-full px-3 py-2" placeholder="employees">
+            <form id="builder-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Table name</label>
+                    <input type="text" id="table"
+                           class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                           placeholder="employees">
                 </div>
 
+                <!-- الحقول -->
                 <div id="fields-area" class="space-y-3"></div>
 
-                <button type="button" onclick="addField()" class="bg-blue-600 text-white px-4 py-2 rounded mt-3">
-                    ➕ إضافة حقل
-                </button>
-
-                <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded mt-3 float-right">
-                    💾 حفظ الجدول
-                </button>
+                <div class="flex justify-between items-center pt-4 border-t">
+                    <button type="button" onclick="addField()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
+                        ➕ Add Field
+                    </button>
+                    <button type="submit"
+                            class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg shadow">
+                        💾 Save Table
+                    </button>
+                </div>
             </form>
         </div>
 
-        <div class="border p-5 rounded-lg bg-white shadow">
-            <h2 class="text-lg font-semibold mb-4">📦 الجداول المحفوظة</h2>
+        <!-- 🔹 الجداول المحفوظة -->
+        <div class="bg-white border rounded-xl shadow p-6">
+            <h2 class="text-lg font-semibold text-gray-700 border-b pb-2 mb-4">📦 Saved Tables</h2>
 
             @if(empty($savedTables))
-                <div class="text-slate-500 text-center p-5 border rounded bg-slate-50">
-                    لا توجد جداول محفوظة بعد.
+                <div class="text-center text-gray-400 py-10 border border-dashed rounded-lg bg-gray-50">
+                    No saved tables yet.
                 </div>
             @else
-                @foreach($savedTables as $name)
-                    <div class="flex justify-between items-center border-b py-3">
-                        <span class="font-medium">{{ $name }}</span>
-                        <button onclick="injectTable('{{ $name }}')"
-                                class="bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700">
-                            🧩 Inject to DB
-                        </button>
-                    </div>
-                @endforeach
+                <div class="divide-y">
+                    @foreach($savedTables as $name)
+                        <div class="flex justify-between items-center py-3">
+                            <span class="font-medium text-gray-700">{{ $name }}</span>
+                            <button onclick="injectTable('{{ $name }}')"
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg shadow text-sm">
+                                🧩 Inject to DB
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
             @endif
         </div>
     </div>
+    @if(!empty($dbTables))
+        <div class="border p-5 rounded-lg bg-white shadow mt-10">
+            <h2 class="text-lg font-semibold mb-4">🧭 مستكشف قاعدة البيانات</h2>
 
+            <table class="min-w-full border text-sm">
+                <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-3 py-2 text-left">اسم الجدول</th>
+                    <th class="border px-3 py-2 text-center">عدد الأعمدة</th>
+                    <th class="border px-3 py-2 text-center">عدد السجلات</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($dbTables as $t)
+                    @php
+                        // ✅ استخرج اسم الجدول من الكائن (مثل النسخة القديمة تمامًا)
+                        $tableName = array_values((array)$t)[0];
+
+                        // ✅ اجلب الأعمدة وعدد السجلات
+                        $cols = \DB::select("SHOW COLUMNS FROM `$tableName`");
+                        $count = \DB::table($tableName)->count();
+                    @endphp
+
+                    <tr class="hover:bg-gray-50">
+                        <td class="border px-3 py-2 font-medium text-gray-800">{{ $tableName }}</td>
+                        <td class="border px-3 py-2 text-center text-gray-600">{{ count($cols) }}</td>
+                        <td class="border px-3 py-2 text-center text-gray-600">{{ $count }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+
+
+
+
+    <!-- 🔹 سكربت التفاعلات -->
     <script>
         let fieldIndex = 0;
 
         function addField() {
             const container = document.getElementById('fields-area');
             const div = document.createElement('div');
-            div.className = 'border p-3 rounded flex items-center gap-2';
+            div.className = 'border p-3 rounded-lg bg-gray-50 flex items-center gap-2';
             div.innerHTML = `
-        <input type="text" name="fields[${fieldIndex}][name]" placeholder="اسم الحقل" class="border rounded px-3 py-1 w-1/3">
-        <select name="fields[${fieldIndex}][type]" class="border rounded px-2 py-1 w-1/3">
-            <option value="string">String</option>
-            <option value="integer">Integer</option>
-            <option value="decimal">Decimal</option>
-            <option value="boolean">Boolean</option>
-            <option value="date">Date</option>
-            <option value="text">Text</option>
-        </select>
-        <label class="flex items-center gap-1">
-            <input type="checkbox" name="fields[${fieldIndex}][required]"> Required
-        </label>
-        <button type="button" onclick="this.parentElement.remove()" class="text-red-500 font-bold">✕</button>
-    `;
+            <input type="text" name="fields[${fieldIndex}][name]" placeholder="field name"
+                class="border rounded-lg px-3 py-1.5 w-1/3 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+
+            <select name="fields[${fieldIndex}][type]"
+                class="border rounded-lg px-2 py-1.5 w-1/3 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                <option value="string">String</option>
+                <option value="integer">Integer</option>
+                <option value="decimal">Decimal</option>
+                <option value="boolean">Boolean</option>
+                <option value="date">Date</option>
+                <option value="text">Text</option>
+            </select>
+
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <input type="checkbox" name="fields[${fieldIndex}][required]" class="rounded border-gray-400">
+                Required
+            </label>
+
+            <button type="button" onclick="this.parentElement.remove()"
+                    class="text-red-500 font-bold hover:text-red-700 text-lg">✕</button>
+        `;
             container.appendChild(div);
             fieldIndex++;
         }
 
         document.getElementById('builder-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
             const table = document.getElementById('table').value;
-            if (!table) return alert('⚠️ أدخل اسم الجدول أولاً.');
+            if (!table.trim()) return alert('⚠️ Enter table name first.');
 
             const fields = [];
             document.querySelectorAll('#fields-area > div').forEach(div => {
                 const name = div.querySelector('input[name*="[name]"]').value;
                 const type = div.querySelector('select').value;
                 const required = div.querySelector('input[type="checkbox"]').checked;
-                if (name) fields.push({ name, type, required });
+                if (name.trim()) fields.push({ name, type, required });
             });
 
-            const res = await fetch('{{ url("/builder/save") }}', {
+            const res = await fetch('{{ url("/builder/tables/save") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -101,7 +161,7 @@
         });
 
         async function injectTable(table) {
-            if (!confirm(`هل تريد حقن الجدول '${table}' في قاعدة البيانات؟`)) return;
+            if (!confirm(`Inject table '${table}' into the database?`)) return;
             const res = await fetch(`/builder/inject/${table}`, {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }

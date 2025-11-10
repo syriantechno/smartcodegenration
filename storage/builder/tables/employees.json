@@ -1,0 +1,22 @@
+[
+    {
+        "name": "id",
+        "type": "integer",
+        "required": false
+    },
+    {
+        "name": "name",
+        "type": "string",
+        "required": false
+    },
+    {
+        "name": "email",
+        "type": "string",
+        "required": false
+    },
+    {
+        "name": "department_id",
+        "type": "integer",
+        "required": false
+    }
+]

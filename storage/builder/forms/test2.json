@@ -1,0 +1,10 @@
+{
+    "table": "test2",
+    "fields": [
+        "id",
+        "name",
+        "email",
+        "number",
+        "date"
+    ]
+}
